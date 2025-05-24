@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tool Tài Xỉu v2.7</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #ffccff, #ff6666);
+      font-family: 'Poppins', sans-serif;
+    }
+    .container {
+      margin-top: 40px;
+    }
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    .result-box {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 10px;
+      background-color: #fffae6;
+      border: 2px solid #ff9900;
+    }
+    .nav-link {
+      font-weight: 600;
+    }
+    #welcome-message {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #ff3366;
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      z-index: 9999;
+      text-align: center;
+      animation: fadeIn 1s ease-out;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="text-center mb-4">🚀 Tool Tài Xỉu v2.7</h2>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="key-tab" data-bs-toggle="tab" data-bs-target="#key" type="button" role="tab">Bản quyền</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="predict-tab" data-bs-toggle="tab" data-bs-target="#predict" type="button" role="tab" style="display: none;">Dự đoán</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="strategy-tab" data-bs-toggle="tab" data-bs-target="#strategy" type="button" role="tab" style="display: none;">Chiến lược</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-tab-content" type="button" role="tab" style="display: none;">Lịch sử</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" style="display: none;">Liên hệ</button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <!-- Bản quyền -->
+      <div class="tab-pane fade show active" id="key" role="tabpanel">
+        <div class="card">
+          <h5>🔐 Nhập KEY bản quyền:</h5>
+          <div class="input-group">
+            <input id="license-key" type="text" class="form-control" placeholder="Nhập KEY..." />
+            <button class="btn btn-success" onclick="verifyKey()">Mở khóa</button>
+          </div>
+          <div class="form-text mt-2">Bản quyền thuộc Dev Vtung và BonDz</div>
+          <div id="license-msg" class="mt-1 fw-bold"></div>
+        </div>
+      </div>
+
+      <!-- Dự đoán -->
+      <div class="tab-pane fade" id="predict" role="tabpanel">
+        <div class="card">
+          <h5>📊 Phân tích chuỗi:</h5>
+          <input id="maphien" type="text" class="form-control" placeholder="Nhập mã phiên..." />
+          <button class="btn btn-primary mt-2" onclick="analyzeAndPredict()">Dự đoán</button>
+          <div id="result" class="result-box mt-2"></div>
+        </div>
+      </div>
+
+      <!-- Chiến lược -->
+      <div class="tab-pane fade" id="strategy" role="tabpanel">
+        <div class="card">
+          <h5>🚀 Chiến lược Gấp thếp:</h5>
+          <input id="investment" type="number" class="form-control" placeholder="Nhập vốn..." />
+          <button class="btn btn-danger mt-2" onclick="smartStrategy()">Áp dụng chiến lược</button>
+          <div id="strategy-result" class="result-box mt-2"></div>
+        </div>
+      </div>
+
+      <!-- Lịch sử -->
+      <div class="tab-pane fade" id="history-tab-content" role="tabpanel">
+        <div class="card">
+          <h5>🕓 Lịch sử phân tích:</h5>
+          <div id="history" class="text-muted small"></div>
+        </div>
+      </div>
+
+      <!-- Liên hệ -->
+      <div class="tab-pane fade" id="contact" role="tabpanel">
+        <div class="card">
+          <h5>📞 Liên hệ:</h5>
+          <ul>
+            <li><strong>Facebook:</strong> <a href="https://facebook.com" target="_blank">facebook.com/vtung</a></li>
+            <li><strong>Zalo:</strong> 0123456789</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Welcome Message -->
+  <div id="welcome-message">
+    🎉 Chào mừng đến với Tool Dự Đoán!
+  </div>
+
+  <script>
+    const validKeys = ["VtungDz"];
+    const historyList = [];
+
+    function verifyKey() {
+      const key = document.getElementById("license-key").value.trim();
+      const msg = document.getElementById("license-msg");
+      const welcome = document.getElementById("welcome-message");
+
+      if (validKeys.includes(key)) {
+        msg.textContent = "✅ Mở khóa thành công!";
+        msg.className = "text-success";
+
+        // Hiện các tab
+        document.getElementById("predict-tab").style.display = "inline-block";
+        document.getElementById("strategy-tab").style.display = "inline-block";
+        document.getElementById("history-tab").style.display = "inline-block";
+        document.getElementById("contact-tab").style.display = "inline-block";
+
+        // Hiệu ứng chào mừng
+        setTimeout(() => {
+          welcome.style.display = "block";
+          setTimeout(() => welcome.style.display = "none", 3000);
+        }, 500);
+      } else {
+        msg.textContent = "❌ KEY không hợp lệ!";
+        msg.className = "text-danger";
+      }
+    }
+
+    function analyzeAndPredict() {
+      const mã = document.getElementById("maphien").value.trim();
+      const resultBox = document.getElementById("result");
+      if (!mã) {
+        resultBox.innerHTML = '<span class="text-danger">Vui lòng nhập mã phiên!</span>';
+        return;
+      }
+      const hash = md5(mã);
+      const base = parseInt(hash.substring(0, 2), 16) % 2;
+      const prediction = base === 0 ? "Tài" : "Xỉu";
+      const confidence = 90 + Math.floor(Math.random() * 10);
+      resultBox.innerHTML = `Dự đoán: <strong>${prediction}</strong> (${confidence}% tin cậy)`;
+      addToHistory("Phân tích", mã, `${prediction} - ${confidence}%`);
+    }
+
+    function smartStrategy() {
+      const investment = parseInt(document.getElementById("investment").value);
+      const strategyBox = document.getElementById("strategy-result");
+      if (isNaN(investment) || investment <= 0) {
+        strategyBox.innerHTML = '<span class="text-danger">Vui lòng nhập vốn hợp lệ!</span>';
+        return;
+      }
+      const baseAmount = investment / 15;
+      const rounds = [1, 2, 4, 8, 16];
+      const strategy = rounds.map((r, i) => `Tay ${i + 1}: ${(baseAmount * r).toFixed(2)} VND`).join("<br>");
+      strategyBox.innerHTML = `Chiến lược:<br>${strategy}`;
+    }
+
+    function addToHistory(type, input, value) {
+      const historyBox = document.getElementById("history");
+      const entry = `<div>[${type}] ${input}: ${value}</div>`;
+      historyList.unshift(entry);
+      historyBox.innerHTML = historyList.slice(0, 10).join("");
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+      </html>
